@@ -22,12 +22,12 @@ NotImplemented ()
     echo "${COMMAND} not implemented" 1>&2
 }
 
-GlusterVolumeName ()
+NfsMountPointOfGlusterVolume ()
 {
 
     user_name="$1"
 
-    echo "gv_${user_name}"
+    echo "/gluster/gv_${user_name}"
 }
 
 DockerVolumeName ()
@@ -44,7 +44,7 @@ CreateDockerVolumesFromGlusterVolume ()
 
     user_name="$1"
 
-    gluster_volume_name=$( GlusterVolumeName "${user_name}" )
+    nfs_mount_point=$( NfsMountPointOfGlusterVolume "${user_name}" )
     docker_volume_name=$( DockerVolumeName "${user_name}" )
 
     for endpoint in ${DOCKER_ENPOINT_LIST}
@@ -60,13 +60,15 @@ CreateDockerVolumesFromGlusterVolume ()
 	    echo "Volume ${docker_volume_name} already exists on endpoint ${endpoint}. Skipping".
 	else
 
+	    set -x
 	    docker -H "${endpoint}" \
 		volume create \
 		--driver local \
 		--opt type=nfs \
-		--opt o=addr=localhost,rw,noatime,rsize=8192,wsize=8192,tcp,timeo=14 \
-		--opt device=:/${gluster_volume_name} \
+		--opt o=addr=localhost,rw,noatime,rsize=8192,wsize=8192,tcp,timeo=14,vers=4 \
+		--opt device=:${nfs_mount_point} \
 		${docker_volume_name}
+	    set +x
 	fi
     done
 }
@@ -92,8 +94,10 @@ RemoveDockerVolumesForGlusterVolume ()
 	    echo "Volume ${docker_volume_name} does not exist on endpoint ${endpoint}. Skipping".
 	else
 
+	    set -x
 	    docker -H "${endpoint}" \
 		volume rm "${docker_volume_name}"
+	    set +x
 	fi
     done
 }

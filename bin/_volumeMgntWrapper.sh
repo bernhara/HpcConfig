@@ -22,13 +22,30 @@ NotImplemented ()
     echo "${COMMAND} not implemented" 1>&2
 }
 
+GlusterVolumeName ()
+{
+
+    user_name="$1"
+
+    echo "gv_${user_name}"
+}
+
+DockerVolumeName ()
+{
+
+    user_name="$1"
+
+    echo "gv_${user_name}"
+}
+
+
 CreateDockerVolumesFromGlusterVolume ()
 {
 
     user_name="$1"
 
-    gluster_volume_name="gv_${user_name}"
-    docker_volume_name="gv_${user_name}"
+    gluster_volume_name=$( GlusterVolumeName "${user_name}" )
+    docker_volume_name=$( DockerVolumeName "${user_name}" )
 
     for endpoint in ${DOCKER_ENPOINT_LIST}
     do
@@ -55,10 +72,41 @@ CreateDockerVolumesFromGlusterVolume ()
 }
 
 
+RemoveDockerVolumesForGlusterVolume ()
+{
+
+    user_name="$1"
+
+    docker_volume_name=$( DockerVolumeName "${user_name}" )
+
+    for endpoint in ${DOCKER_ENPOINT_LIST}
+    do
+
+	volumes=$(
+	    docker -H "${endpoint}" \
+		volume ls -q --filter "Name=${docker_volume_name}"
+	)
+
+	if [ -z "${volumes}" ]
+	then
+	    echo "Volume ${docker_volume_name} does not exist on endpoint ${endpoint}. Skipping".
+	else
+
+	    docker -H "${endpoint}" \
+		volume rm "${docker_volume_name}"
+	fi
+    done
+}
+
+
 case "${COMMAND}" in
 
     "createDockerVolumes4User.sh" )
 	CreateDockerVolumesFromGlusterVolume "${user}"
+	;;
+
+    "removeDockerVolumes4User.sh" )
+	RemoveDockerVolumesForGlusterVolume "${user}"
 	;;
 
     "createGlusterVolume4User.sh" )

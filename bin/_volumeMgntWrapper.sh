@@ -22,12 +22,20 @@ NotImplemented ()
     echo "${COMMAND} not implemented" 1>&2
 }
 
+GlusterVolumeName ()
+{
+
+    user_name="$1"
+
+    echo "gv_${user_name}"
+}
+
 NfsMountPointOfGlusterVolume ()
 {
 
     user_name="$1"
 
-    echo "/gluster/gv_${user_name}"
+    echo "/gluster/$( GlusterVolumeName ${user_name} )"
 }
 
 DockerVolumeName ()
@@ -103,6 +111,38 @@ RemoveDockerVolumesForGlusterVolume ()
 }
 
 
+CreateDockerVolumesFromGlusterVolume ()
+{
+
+    user_name="$1"
+
+    gluster_volume_name=$( GlusterVolumeName ${user_name} )
+
+    volume_info=$(
+	gluster \
+	    volume info "${gluster_volume_name}" 2>/dev/null
+    )
+    if [ -n "${volume_info}" ]
+    then
+	echo "Gluster volume ${gluster_volume_name} already exists. Skipping".
+    else
+
+	set -x 
+	gluster \
+	    volume create \
+	    $( GlusterVolumeName ${user_name} ) \
+	    replica 3 \
+	    s-raph-ale:/data/glusterfs/hpcvol/brick1/volumes/${user_name} \
+	    s-huaweig560:/data/glusterfs/hpcvol/brick1/volumes/${user_name} \
+	    s-cocolink:/data/glusterfs/hpcvol/brick1/volumes/${user_name} 
+	gluster \
+	    volume start $( GlusterVolumeName ${user_name} )
+	set +x
+    fi
+}
+
+
+
 case "${COMMAND}" in
 
     "createDockerVolumes4User.sh" )
@@ -114,7 +154,7 @@ case "${COMMAND}" in
 	;;
 
     "createGlusterVolume4User.sh" )
-	NotImplemented
+	CreateDockerVolumesFromGlusterVolume "${user}"
 	;;
 
     * )

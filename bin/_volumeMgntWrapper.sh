@@ -111,7 +111,7 @@ RemoveDockerVolumesForGlusterVolume ()
 }
 
 
-CreateDockerVolumesFromGlusterVolume ()
+CreateGlusterVolume4User ()
 {
 
     user_name="$1"
@@ -154,7 +154,7 @@ case "${COMMAND}" in
 	;;
 
     "createGlusterVolume4User.sh" )
-	CreateDockerVolumesFromGlusterVolume "${user}"
+	CreateGlusterVolume4User "${user}"
 	;;
 
     * )

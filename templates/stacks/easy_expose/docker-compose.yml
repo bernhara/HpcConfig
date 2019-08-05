@@ -11,15 +11,20 @@ services:
     expose:
        - 8080
     environment:
-      VIRTUAL_HOST: ${XIP_PREFIX}.161.106.174.22.xip.io
+      VIRTUAL_HOST: ${XIP_PREFIX}-161-106-174-22.nip.io
       VIRTUAL_PORT: 8080
-      LETSENCRYPT_HOST: ${XIP_PREFIX}.161.106.174.22.xip.io
+      LETSENCRYPT_HOST: ${XIP_PREFIX}-161-106-174-22.nip.io
       LETSENCRYPT_EMAIL: raphael.bernhard@orange.com
     command: tcp-listen:8080,fork,reuseaddr tcp-connect:${TARGET_HOST}:${TARGET_PORT}
     networks:
       - auto_https_reverse_proxy
+    external_links:
+      - nginx-letsencrypt
+      - nginx-gen
+
 
 networks:
   auto_https_reverse_proxy:
     external:
       name: webservices
+

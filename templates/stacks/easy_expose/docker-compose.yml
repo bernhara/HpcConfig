@@ -1,9 +1,11 @@
 version: '2'
 
+# TODO: remove .env
+
 services:
   autoforward:
     image: alpine/socat
-    restart: never
+    restart: "no"
 #    ports:
 #      - "9998:8080"
     expose:

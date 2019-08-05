@@ -18,9 +18,9 @@ services:
     command: tcp-listen:8080,fork,reuseaddr tcp-connect:${TARGET_HOST}:${TARGET_PORT}
     networks:
       - auto_https_reverse_proxy
-    external_links:
-      - nginx-letsencrypt
-      - nginx-gen
+#!!    external_links:
+#!!      - nginx-letsencrypt
+#!!      - nginx-gen
 
 
 networks:

@@ -21,4 +21,3 @@ networks:
   auto_https_reverse_proxy:
     external:
       name: webservices
-

@@ -3,9 +3,11 @@ version: '2'
 services:
   autoforward:
     image: alpine/socat
-    restart: always
-    ports:
-      - "9998:8080"
+    restart: never
+#    ports:
+#      - "9998:8080"
+    expose:
+       - 8080
     environment:
       VIRTUAL_HOST: ${XIP_PREFIX}.161.106.174.22.xip.io
       VIRTUAL_PORT: 8080
@@ -19,3 +21,4 @@ networks:
   auto_https_reverse_proxy:
     external:
       name: webservices
+

@@ -12,11 +12,3 @@ RUN python3 -m pip install --upgrade pip
 RUN python3 -m pip install pipenv
 
 RUN python3 -m pip install jupyter
-
-#!!RUN groupadd -r -g 1002 d_yfgi6212
-#!!RUN useradd -r -u 1001 --no-log-init -g d_yfgi6212 d_yfgi6212
-#!!
-#!!WORKDIR /image_workspace
-#!!
-#!!
-#!!USER d_yfgi6212
